@@ -22,6 +22,15 @@ const handleScroll = (): void => {
   previousScrollY.value = currentScrollY
 }
 
+const activeSection = ref('work')
+
+const updateActiveSection = () => {
+  const hash = window.location.hash
+  if (hash) {
+    activeSection.value = hash.replace('#', '')
+  }
+}
+
 
 const toggleMenu = () => {
   isOpen.value = !isOpen.value
@@ -30,11 +39,15 @@ const toggleMenu = () => {
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
+  window.addEventListener('hashchange', updateActiveSection)
+  updateActiveSection() // inisialisasi awal
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  window.removeEventListener('hashchange', updateActiveSection)
 })
+
 </script>
 
 <template>
@@ -61,7 +74,12 @@ onUnmounted(() => {
             v-for="item in ['Work', 'About', 'Services', 'Ideas','Careers', 'Contact']"
             :key="item"
             :href="`#${item.toLowerCase()}`"
-            :class="['nav-link', scrolled ? 'nav-link-scroll' : 'text-slate-50']"
+            :class="[
+              'nav-link',
+              scrolled ? 'nav-link-scroll' : 'text-slate-50',
+              activeSection === item.toLowerCase() ? 'font-bold underline underline-offset-8' : ''
+            ]"
+
             >{{ item }}</a
           >
         </div>
@@ -83,7 +101,11 @@ onUnmounted(() => {
           v-for="item in ['Work', 'About', 'Services', 'Ideas','Careers', 'Contact']"
           :key="item"
           :href="`#${item.toLowerCase()}`"
-          class="mobile-link"
+          :class="[
+            'mobile-link',
+            activeSection === item.toLowerCase() ? 'text-blue-600 font-bold' : '' 
+          ]"
+
           >{{ item }}</a
         >
       </div>
